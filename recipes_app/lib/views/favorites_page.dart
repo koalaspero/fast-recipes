@@ -15,13 +15,14 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
+  // Inyección de controladores GetX
   final FavoritesController favController = Get.find();
   final ThemeController themeC = Get.find();
 
   @override
   void initState() {
     super.initState();
-    favController.loadFavorites(); // Cargar favoritos al inicio
+    favController.loadFavorites(); // Carga inicial de recetas favoritas desde la BD
   }
 
   @override
@@ -39,8 +40,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
           iconTheme: IconThemeData(color: isLight ? Colors.black : Colors.white),
         ),
         body: Obx(() {
-          final list = favController.favorites;
+          final list = favController.favorites; // Lista reactiva de favoritos
 
+          // Estado vacío - Sin recetas guardadas
           if (list.isEmpty) {
             return Center(
               child: Text(
@@ -50,6 +52,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             );
           }
 
+          // Lista de recetas favoritas
           return ListView.separated(
             itemCount: list.length,
             separatorBuilder: (_, __) => Divider(
@@ -59,20 +62,25 @@ class _FavoritesPageState extends State<FavoritesPage> {
             itemBuilder: (context, index) {
               final Recipe r = list[index];
               return ListTile(
+                // Thumbnail de la receta
                 leading: r.thumbnail.isNotEmpty
                     ? Image.network(r.thumbnail, width: 56, height: 56, fit: BoxFit.cover)
                     : SizedBox(width: 56, height: 56),
+                // Nombre de la receta
                 title: Text(
                   r.name,
                   style: TextStyle(color: isLight ? Colors.black : Colors.white),
                 ),
+                // Primeros 3 ingredientes como preview
                 subtitle: Text(
                   r.ingredients.take(3).join(', '),
                   style: TextStyle(color: isLight ? Colors.grey[700] : Colors.grey[300]),
                 ),
+                // Navegación a detalle de receta
                 onTap: () {
                   Get.toNamed(AppRoutes.detail, arguments: r);
                 },
+                // Botón de eliminación con confirmación
                 trailing: IconButton(
                   icon: Icon(Icons.delete_outline,
                       color: isLight ? Colors.red : Colors.red[300]),

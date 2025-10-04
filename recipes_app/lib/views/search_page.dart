@@ -4,8 +4,8 @@ import 'package:recipes_app/controllers/theme_controller.dart';
 import '../controllers/recipe_controller.dart';
 import '../routes/app_routes.dart';
 
-
 class SearchPage extends StatelessWidget {
+  // Inyección de controladores GetX
   final RecipeController controller = Get.find();
   final TextEditingController textCtrl = TextEditingController();
   final ThemeController themeC = Get.find();
@@ -21,11 +21,13 @@ class SearchPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Recetas Rápidas'),
           actions: [
+            // Botón para alternar tema claro/oscuro
             IconButton(
               icon: Icon(isLight ? Icons.light_mode : Icons.dark_mode),
               onPressed: themeC.toggleTheme,
               tooltip: 'Cambiar tema',
             ),
+            // Navegación a pantalla de favoritos
             IconButton(
               icon: Icon(Icons.favorite),
               onPressed: () => Get.toNamed(AppRoutes.favorites),
@@ -35,6 +37,7 @@ class SearchPage extends StatelessWidget {
         ),
         body: Column(
           children: [
+            // Barra de búsqueda
             Padding(
               padding: const EdgeInsets.all(8),
               child: Row(
@@ -51,10 +54,12 @@ class SearchPage extends StatelessWidget {
                       style: TextStyle(
                         color: isLight ? Colors.black : Colors.white,
                       ),
+                      // Búsqueda al presionar Enter
                       onSubmitted: (value) =>
                           controller.searchRecipes(value.toLowerCase().trim()),
                     ),
                   ),
+                  // Botón de búsqueda manual
                   IconButton(
                     icon: Icon(
                       Icons.search,
@@ -66,18 +71,19 @@ class SearchPage extends StatelessWidget {
                 ],
               ),
             ),
+            // Resultados de búsqueda
             Expanded(
               child: controller.isLoading.value
-                  ? Center(child: CircularProgressIndicator())
+                  ? Center(child: CircularProgressIndicator()) // Estado de carga
                   : controller.recipes.isEmpty
-                      ? Center(
+                      ? Center( // Estado vacío - sin búsquedas
                           child: Text(
                             'Escribe un ingrediente para buscar.',
                             style:
                                 TextStyle(color: isLight ? Colors.black : Colors.white),
                           ),
                         )
-                      : ListView.builder(
+                      : ListView.builder( // Lista de resultados
                           itemCount: controller.recipes.length,
                           itemBuilder: (context, index) {
                             final recipe = controller.recipes[index];
@@ -94,6 +100,7 @@ class SearchPage extends StatelessWidget {
                                   color: isLight ? Colors.black : Colors.white,
                                 ),
                               ),
+                              // Navegación a detalle de receta
                               onTap: () => Get.toNamed(
                                 AppRoutes.detail,
                                 arguments: recipe,

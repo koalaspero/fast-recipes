@@ -13,19 +13,21 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  // Inyección de controladores GetX
   final RecipeController recipeController = Get.find();
   late FavoritesController favController;
   final ThemeController themeC = Get.find();
-  late final dynamic arg;
+  late final dynamic arg; // Argumentos de navegación
 
   @override
   void initState() {
     super.initState();
-    favController = Get.put(FavoritesController());
-    arg = Get.arguments;
-    _prepare();
+    favController = Get.put(FavoritesController()); // Inicializa controlador de favoritos
+    arg = Get.arguments; // Obtiene argumentos pasados en la navegación
+    _prepare(); // Prepara los datos de la receta
   }
 
+  // Maneja diferentes tipos de argumentos para cargar la receta
   Future<void> _prepare() async {
     if (arg == null) {
       Get.snackbar('Error', 'No se recibió ninguna receta.',
@@ -33,11 +35,11 @@ class _DetailPageState extends State<DetailPage> {
       return;
     }
     if (arg is Recipe) {
-      recipeController.selectedRecipe.value = arg;
+      recipeController.selectedRecipe.value = arg; // Receta directa
     } else if (arg is String) {
-      await recipeController.fetchRecipeById(arg);
+      await recipeController.fetchRecipeById(arg); // ID de receta
     } else if (arg is Map && arg['id'] != null) {
-      await recipeController.fetchRecipeById(arg['id'].toString());
+      await recipeController.fetchRecipeById(arg['id'].toString()); // Mapa con ID
     } else {
       Get.snackbar('Error', 'Argumento inválido para detalle.',
           snackPosition: SnackPosition.BOTTOM);
@@ -52,6 +54,7 @@ class _DetailPageState extends State<DetailPage> {
         final recipe = recipeController.selectedRecipe.value;
         final isLight = themeC.themeMode.value == ThemeMode.light;
 
+        // Estados de carga y error
         if (recipeController.isLoading.value) {
           return Center(child: CircularProgressIndicator());
         }
@@ -68,6 +71,7 @@ class _DetailPageState extends State<DetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Imagen de la receta
               if (recipe.thumbnail.isNotEmpty)
                 Center(
                   child: Image.network(
@@ -78,10 +82,14 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                 ),
               SizedBox(height: 12),
+              
+              // Nombre de la receta
               Text(recipe.name,
                   style: Theme.of(context).textTheme.headlineSmall!
                       .copyWith(color: isLight ? Colors.black : Colors.white)),
               SizedBox(height: 8),
+              
+              // Lista de ingredientes
               Text('Ingredientes',
                   style: Theme.of(context).textTheme.bodyLarge!
                       .copyWith(color: isLight ? Colors.black : Colors.white)),
@@ -102,6 +110,8 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   )),
               SizedBox(height: 12),
+              
+              // Instrucciones en área de scroll
               Text('Instrucciones',
                   style: Theme.of(context).textTheme.bodyLarge!
                       .copyWith(color: isLight ? Colors.black : Colors.white)),
@@ -124,6 +134,8 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               ),
               SizedBox(height: 20),
+              
+              // Botón de favoritos dinámico
               Row(
                 children: [
                   Expanded(
@@ -150,4 +162,3 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 }
-
